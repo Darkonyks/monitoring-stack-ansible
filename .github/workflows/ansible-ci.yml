@@ -2,30 +2,34 @@ name: Ansible CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-  ansible-syntax-check:
+  ansible-checks:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Ansible
+      - name: Install Ansible & Ansible Lint
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible
+          sudo apt update
+          sudo apt install -y ansible ansible-lint
 
-      - name: Ansible syntax check
+      - name: Syntax check
         run: |
-          ansible-playbook *.yml --syntax-check
+          ansible-playbook ansible/playbook.yml \
+            --syntax-check \
+            -i ansible/hosts
 
-      - name: Install ansible-lint
+      - name: Lint check
+        run: ansible-lint ansible/playbook.yml
+
+      - name: Dry-run playbook (no changes applied)
         run: |
-          pip install ansible-lint
-
-      - name: Run ansible-lint
-        run: ansible-lint playbook.yml
+          ansible-playbook ansible/playbook.yml \
+            --check \
+            -i ansible/hosts || true

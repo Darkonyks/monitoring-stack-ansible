@@ -2,11 +2,13 @@
 - name: Deploy monitoring stack
   hosts: all
   become: yes
+
   vars_files:
     - vars/main.yml
 
   roles:
     - { role: prometheus, when: inventory_hostname in groups['prometheus_server'] }
     - { role: node_exporter, when: inventory_hostname in groups['node_exporter_servers'] or inventory_hostname in groups['prometheus_server'] }
-    - docker_metrics
-    - watchdogs
+    - { role: docker_metrics, when: inventory_hostname in groups['docker_metrics_servers'] }
+    - { role: watchdogs, when: inventory_hostname in groups['node_exporter_servers'] or inventory_hostname in groups['prometheus_server'] }
+
