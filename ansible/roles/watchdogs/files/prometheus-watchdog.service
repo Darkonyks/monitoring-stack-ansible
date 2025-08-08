@@ -1,0 +1,6 @@
+[Unit]
+Description=Prometheus health check watchdog
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/prometheus-watchdog.sh

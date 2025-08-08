@@ -1,0 +1,10 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Node Exporter Overview",
+    "panels": [],
+    "schemaVersion": 39,
+    "version": 1
+  },
+  "overwrite": true
+}

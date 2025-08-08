@@ -1,0 +1,70 @@
+---
+- name: Ensure Prometheus user
+  user:
+    name: prometheus
+    shell: /usr/sbin/nologin
+    system: yes
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+  loop:
+    - /etc/prometheus
+    - /var/lib/prometheus
+
+- name: Download Prometheus archive
+  get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    mode: '0644'
+
+- name: Extract Prometheus
+  unarchive:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Install Prometheus binaries
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: '0755'
+  loop:
+    - prometheus
+    - promtool
+
+- name: Install consoles
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/{{ item }}"
+    dest: "/etc/prometheus/{{ item }}"
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+  loop:
+    - consoles
+    - console_libraries
+
+- name: Copy Prometheus config
+  copy:
+    src: "prometheus.yml"
+    dest: "{{ prometheus_config_path }}"
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+
+- name: Install systemd service
+  copy:
+    src: "prometheus.service"
+    dest: "/etc/systemd/system/prometheus.service"
+    mode: '0644'
+
+- name: Enable and start Prometheus
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+    daemon_reload: yes

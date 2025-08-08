@@ -1,0 +1,33 @@
+---
+- name: Ensure output directory for textfile metrics
+  file:
+    path: "{{ docker_metrics_output_dir }}"
+    state: directory
+    owner: node_exporter
+    group: node_exporter
+    mode: '0755'
+
+- name: Install docker-volumes-metrics script
+  copy:
+    src: "docker-volumes-metrics.sh"
+    dest: "/usr/local/bin/docker-volumes-metrics.sh"
+    mode: '0755'
+
+- name: Install service
+  copy:
+    src: "docker-volumes-metrics.service"
+    dest: "/etc/systemd/system/docker-volumes-metrics.service"
+    mode: '0644'
+
+- name: Install timer
+  copy:
+    src: "docker-volumes-metrics.timer"
+    dest: "/etc/systemd/system/docker-volumes-metrics.timer"
+    mode: '0644'
+
+- name: Enable and start timer
+  systemd:
+    name: docker-volumes-metrics.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes

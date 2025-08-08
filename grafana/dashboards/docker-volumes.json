@@ -1,0 +1,10 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Docker Volumes",
+    "panels": [],
+    "schemaVersion": 39,
+    "version": 1
+  },
+  "overwrite": true
+}

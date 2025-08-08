@@ -1,0 +1,42 @@
+---
+- name: Install Node Exporter watchdog (only on node_exporter hosts)
+  when: inventory_hostname in groups['node_exporter_servers']
+  block:
+    - copy:
+        src: "node-exporter-watchdog.sh"
+        dest: "/usr/local/bin/node-exporter-watchdog.sh"
+        mode: '0755'
+    - copy:
+        src: "node-exporter-watchdog.service"
+        dest: "/etc/systemd/system/node-exporter-watchdog.service"
+        mode: '0644'
+    - copy:
+        src: "node-exporter-watchdog.timer"
+        dest: "/etc/systemd/system/node-exporter-watchdog.timer"
+        mode: '0644'
+    - systemd:
+        name: node-exporter-watchdog.timer
+        state: started
+        enabled: yes
+        daemon_reload: yes
+
+- name: Install Prometheus watchdog (only on prometheus host)
+  when: inventory_hostname in groups['prometheus_server']
+  block:
+    - copy:
+        src: "prometheus-watchdog.sh"
+        dest: "/usr/local/bin/prometheus-watchdog.sh"
+        mode: '0755'
+    - copy:
+        src: "prometheus-watchdog.service"
+        dest: "/etc/systemd/system/prometheus-watchdog.service"
+        mode: '0644'
+    - copy:
+        src: "prometheus-watchdog.timer"
+        dest: "/etc/systemd/system/prometheus-watchdog.timer"
+        mode: '0644'
+    - systemd:
+        name: prometheus-watchdog.timer
+        state: started
+        enabled: yes
+        daemon_reload: yes

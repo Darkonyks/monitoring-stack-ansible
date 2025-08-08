@@ -1,0 +1,6 @@
+[Unit]
+Description=Node Exporter health check watchdog
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/node-exporter-watchdog.sh

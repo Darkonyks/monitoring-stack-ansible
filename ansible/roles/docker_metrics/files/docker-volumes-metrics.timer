@@ -1,0 +1,10 @@
+[Unit]
+Description=Run docker-volumes-metrics every 15 minutes
+
+[Timer]
+OnBootSec=2m
+OnUnitActiveSec=15m
+Unit=docker-volumes-metrics.service
+
+[Install]
+WantedBy=timers.target

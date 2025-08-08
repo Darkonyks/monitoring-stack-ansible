@@ -1,0 +1,10 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Prometheus Overview",
+    "panels": [],
+    "schemaVersion": 39,
+    "version": 1
+  },
+  "overwrite": true
+}

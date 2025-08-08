@@ -1,0 +1,7 @@
+[Unit]
+Description=Export Docker volumes sizes to node_exporter textfile
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/docker-volumes-metrics.sh
