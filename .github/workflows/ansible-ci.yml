@@ -9,15 +9,18 @@ on:
 jobs:
   ansible-checks:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Ansible & Ansible Lint
         run: |
-          sudo apt update
-          sudo apt install -y ansible ansible-lint
+          sudo apt-get update
+          sudo apt-get install -y ansible ansible-lint
+
+      - name: Show inventory (debug)
+        run: |
+          ansible-inventory -i ansible/hosts --list
 
       - name: Syntax check
         run: |
@@ -28,8 +31,9 @@ jobs:
       - name: Lint check
         run: ansible-lint ansible/playbook.yml
 
-      - name: Dry-run playbook (no changes applied)
+      - name: Dry-run (limit to localhost so it never touches real hosts)
         run: |
           ansible-playbook ansible/playbook.yml \
             --check \
-            -i ansible/hosts || true
+            -i ansible/hosts \
+            -l localhost
