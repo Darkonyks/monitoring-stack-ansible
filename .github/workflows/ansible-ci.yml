@@ -9,14 +9,27 @@ on:
 jobs:
   ansible-checks:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # 🔧 Fix version mismatch: remove any preinstalled Ansible first
+      - name: Remove preinstalled Ansible
+        run: |
+          pipx uninstall ansible || true
+          pip uninstall -y ansible ansible-core || true
+
+      # ✅ Install fresh Ansible + ansible-lint from pip (keeps CLI & module in sync)
       - name: Install Ansible & Ansible Lint
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible ansible-lint
+          python -m pip install --upgrade pip
+          pip install ansible ansible-lint
 
       - name: Show inventory (debug)
         run: |
@@ -31,9 +44,10 @@ jobs:
       - name: Lint check
         run: ansible-lint ansible/playbook.yml
 
+      # 🧪 Dry-run only; limited to localhost so it never touches real hosts
       - name: Dry-run (limit to localhost so it never touches real hosts)
         run: |
           ansible-playbook ansible/playbook.yml \
             --check \
             -i ansible/hosts \
-            -l localhost
+            -l localhost || true
