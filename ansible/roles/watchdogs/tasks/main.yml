@@ -1,42 +1,56 @@
 ---
 - name: Install Node Exporter watchdog (only on node_exporter hosts)
-  when: inventory_hostname in groups['node_exporter_servers']
+  when: inventory_hostname in groups.get('node_exporter_servers', [])
   block:
-    - copy:
+    - name: Copy node-exporter-watchdog script
+      ansible.builtin.copy:
         src: "node-exporter-watchdog.sh"
         dest: "/usr/local/bin/node-exporter-watchdog.sh"
-        mode: '0755'
-    - copy:
+        mode: "0755"
+
+    - name: Install node-exporter-watchdog service
+      ansible.builtin.copy:
         src: "node-exporter-watchdog.service"
         dest: "/etc/systemd/system/node-exporter-watchdog.service"
-        mode: '0644'
-    - copy:
+        mode: "0644"
+
+    - name: Install node-exporter-watchdog timer
+      ansible.builtin.copy:
         src: "node-exporter-watchdog.timer"
         dest: "/etc/systemd/system/node-exporter-watchdog.timer"
-        mode: '0644'
-    - systemd:
+        mode: "0644"
+
+    - name: Enable and start node-exporter-watchdog timer
+      ansible.builtin.systemd:
         name: node-exporter-watchdog.timer
         state: started
-        enabled: yes
-        daemon_reload: yes
+        enabled: true
+        daemon_reload: true
 
 - name: Install Prometheus watchdog (only on prometheus host)
-  when: inventory_hostname in groups['prometheus_server']
+  when: inventory_hostname in groups.get('prometheus_server', [])
   block:
-    - copy:
+    - name: Copy prometheus-watchdog script
+      ansible.builtin.copy:
         src: "prometheus-watchdog.sh"
         dest: "/usr/local/bin/prometheus-watchdog.sh"
-        mode: '0755'
-    - copy:
+        mode: "0755"
+
+    - name: Install prometheus-watchdog service
+      ansible.builtin.copy:
         src: "prometheus-watchdog.service"
         dest: "/etc/systemd/system/prometheus-watchdog.service"
-        mode: '0644'
-    - copy:
+        mode: "0644"
+
+    - name: Install prometheus-watchdog timer
+      ansible.builtin.copy:
         src: "prometheus-watchdog.timer"
         dest: "/etc/systemd/system/prometheus-watchdog.timer"
-        mode: '0644'
-    - systemd:
+        mode: "0644"
+
+    - name: Enable and start prometheus-watchdog timer
+      ansible.builtin.systemd:
         name: prometheus-watchdog.timer
         state: started
-        enabled: yes
-        daemon_reload: yes
+        enabled: true
+        daemon_reload: true

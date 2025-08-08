@@ -1,8 +1,7 @@
-# ansible/playbook.yml
 ---
 - name: Deploy monitoring stack
   hosts: all
-  become: yes
+  become: true
   gather_facts: false
 
   vars_files:
