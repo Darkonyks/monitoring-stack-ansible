@@ -21,7 +21,7 @@ jobs:
 
       - name: Ansible syntax check
         run: |
-          ansible-playbook playbook.yml --syntax-check
+          ansible-playbook *.yml --syntax-check
 
       - name: Install ansible-lint
         run: |
