@@ -6,3 +6,4 @@ Thumbs.db
 .idea/
 # Python cache
 __pycache__/
+.env
